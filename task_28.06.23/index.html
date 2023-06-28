@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Movies</title>
+</head>
+
+<body>
+    <div id="movies-div"></div>
+
+    <script>
+        function fetchCharacters(urls) {
+            var characters = [];
+
+            var count = 0;
+            function handleResponse() {
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        var character = JSON.parse(this.responseText);
+                        characters.push(character);
+                    }
+                    count++;
+
+                    if (count === urls.length) {
+                        callback(characters);
+                    }
+                }
+            }
+            urls.forEach(function (url) {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = handleResponse;
+                request.open('GET', url);
+                request.send();
+            });
+
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var moviesContainer = document.getElementById('movies-div');
+
+            var moviesRequest = new XMLHttpRequest();
+            moviesRequest.onreadystatechange = function () {
+                if (moviesRequest.readyState === 4) {
+                    if (moviesRequest.status === 200) {
+                        var movies = JSON.parse(moviesRequest.responseText);
+                        console.log(movies)
+                        movies.forEach(function (movie) {
+
+                            var movieDiv = document.createElement('div');
+                            moviesContainer.appendChild(movieDiv);
+
+                            var movieTitle = document.createElement('h3');
+                            movieTitle.textContent = 'Episode ' + movie.episodeId + ': ' + movie.name;
+                            movieDiv.appendChild(movieTitle);
+
+                            var movieSummary = document.createElement('p');
+                            movieSummary.textContent = movie.openingCrawl;
+                            movieDiv.appendChild(movieSummary);
+                            fetchCharacters(movie.characters, function (character) {
+                                var charactersList = document.createElement('ul');
+                                movieDiv.appendChild(charactersList);
+                                characters.forEach(function (character) {
+                                    var characterItem = document.createElement('li');
+                                    characterItem.textContent = character.name;
+                                    charactersList.appendChild(characterItem);
+                                });
+                            });
+                        });
+                    } else {
+                        var error = document.createElement('p');
+                        error.textContent = 'Error retrieving movies.';
+                        moviesContainer.appendChild(error);
+                    }
+                }
+            };
+            moviesRequest.open('GET', 'https://ajax.test-danit.com/api/swapi/films');
+            moviesRequest.send();
+        });
+    </script>
+</body>
+
+</html>
