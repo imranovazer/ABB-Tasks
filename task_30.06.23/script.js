@@ -2,6 +2,15 @@ let posts = [];
 let users = [];
 
 
+class Post {
+    constructor(id, userId, body, title) {
+        this.id = id;
+        this.userId = userId;
+        this.body = body;
+        this.title = title;
+    }
+}
+
 const add_button = document.querySelector('.add-button')
 const create_modal = document.querySelector('.create-modal');
 
@@ -41,12 +50,11 @@ const createPost = async () => {
                 userId: 1
 
             }
-            posts.unshift(newPost);
+            posts.unshift(new Post(newPost.id, newPost.userId, newPost.body, newPost.title));
             const divToRemove = document.querySelector('.posts-container')
             divToRemove.innerHTML = '';
             displayData(posts);
             hideModal();
-
         }
 
     } catch (error) {
@@ -82,6 +90,15 @@ const deletePost = async (id) => {
 
 }
 
+const convertResponseToPostObjects = (data) => {
+    posts = []
+    data.map(e => {
+        posts.push(new Post(e.id, e.userId, e.body, e.title));
+    })
+
+}
+
+
 
 const fetchPostsAndUsers = async () => {
 
@@ -92,7 +109,9 @@ const fetchPostsAndUsers = async () => {
 
         const res = await request.json()
         console.log(res)
-        posts = [...res];
+        convertResponseToPostObjects(res);
+        // posts = [...res];
+        console.log(posts)
         const request2 = await fetch('https://ajax.test-danit.com/api/json/users');
         const res2 = await request2.json()
         console.log(res2)
