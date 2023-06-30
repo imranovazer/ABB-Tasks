@@ -2,6 +2,59 @@ let posts = [];
 let users = [];
 
 
+const add_button = document.querySelector('.add-button')
+const create_modal = document.querySelector('.create-modal');
+
+add_button.addEventListener('click', () => {
+
+    create_modal.style.display = 'flex'
+})
+
+const hideModal = () => {
+
+    create_modal.style.display = 'none'
+
+}
+
+const createPost = async () => {
+    const text = document.querySelector('.text');
+    const title = document.querySelector('.title');
+
+
+
+    try {
+        const request = await fetch('https://ajax.test-danit.com/api/json/posts', {
+            method: 'POST',
+            body: JSON.stringify({
+                body: text.value,
+                title: title.value,
+                userId: 1
+            })
+        })
+
+        if (request.ok) {
+
+            const newPost = {
+                id: posts.length + 1,
+                body: text.value,
+                title: title.value,
+                userId: 1
+
+            }
+            posts.unshift(newPost);
+            const divToRemove = document.querySelector('.posts-container')
+            divToRemove.innerHTML = '';
+            displayData(posts);
+            hideModal();
+
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
 const loader = document.createElement('div');
 loader.className = 'loader'
 
