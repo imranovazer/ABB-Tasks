@@ -11,13 +11,11 @@ import {
   displayModal,
   toggleModal,
 } from "../redux/actions/modalActions";
-const ProductList = () => {
-  const { modal } = useSelector((state) => state);
+const ProductList = ({ dataToList }) => {
+  const modal = useSelector((state) => state.modal);
   const [productAddToCart, setProductAddToCart] = useState(null);
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
-  const favorites = useSelector((state) => state.favorites);
-  const { data, error, loading } = useSelector((state) => state.products);
 
   const handleAddToCardClick = (item) => {
     setProductAddToCart(item);
@@ -36,40 +34,38 @@ const ProductList = () => {
   const handleAddToFavorites = (favorit) => {
     dispatch(addRemoveFavorite(favorit));
   };
+  const ifInCart = () => {
+    const inCart = cart.find((item) => item.id == productAddToCart.id);
+
+    return inCart ? true : false;
+  };
 
   return (
     <div className="app container">
-      <h1>Prodicts list</h1>
       <div className="products-container  ">
-        {loading ? (
-          <h1>Loading... </h1>
-        ) : (
-          data?.map((item) => {
-            return (
-              <Card
-                name={item.name}
-                image={item.imagePath}
-                cart={cart}
-                id={item.id}
-                key={item.id}
-                favorites={favorites}
-                handleAddToFavorites={() => handleAddToFavorites(item)}
-                handleAddToCardClick={() => handleAddToCardClick(item)}
-              />
-            );
-          })
-        )}
+        {dataToList?.map((item) => {
+          return (
+            <Card
+              name={item.name}
+              image={item.imagePath}
+              id={item.id}
+              key={item.id}
+              handleAddToFavorites={() => handleAddToFavorites(item)}
+              handleAddToCardClick={() => handleAddToCardClick(item)}
+            />
+          );
+        })}
       </div>
 
       {modal && (
         <Modal
-          header="Add to cart"
+          header={ifInCart() ? "Remove from cart" : "Add to cart"}
           closeButton={true}
-          text="Please confirm that you want add to card this item."
+          text="Please confirm operation."
           actions={
             <Button
-              backgroundColor="orange"
-              text="Add"
+              backgroundColor={"orange"}
+              text={ifInCart() ? "Remove " : "Add"}
               onClick={handleAddToCartConfirm}
             />
           }

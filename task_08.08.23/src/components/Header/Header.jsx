@@ -3,7 +3,8 @@ import "./Header.scss";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 function Header() {
-  const { cart, favorites } = useSelector((state) => state);
+  const cart = useSelector((state) => state.cart);
+  const favorites = useSelector((state) => state.favorites);
 
   return (
     <div className="Header">

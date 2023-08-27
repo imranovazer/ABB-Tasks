@@ -1,4 +1,4 @@
-import { ADD_REMOVE_ITEM } from "../actions/cartActions";
+import { ADD_REMOVE_ITEM, CLEAR_CART } from "../actions/cartActions";
 
 
 const cartData = JSON.parse(localStorage.getItem('cart'))
@@ -24,6 +24,9 @@ function cartReducer(state = cartData || [], action = {}) {
                 return newCart;
 
             }
+        case CLEAR_CART:
+            localStorage.removeItem("cart");
+            return [];
 
 
 

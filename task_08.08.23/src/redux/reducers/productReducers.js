@@ -18,7 +18,6 @@ function productReducer(state = {
                 loading: true, error: false
             };
         case LOAD_PRODUCTS_SUCCESS:
-
             return {
                 ...state,
                 loading: false,
