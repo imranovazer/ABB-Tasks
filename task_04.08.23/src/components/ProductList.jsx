@@ -1,110 +1,73 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "./Button";
 import Modal from "./Modal";
-
 import Card from "./ProductCard";
-import { fetchData } from "../api";
-import { dataContex } from "../contex/DataContexProvider";
-const ProductList = () => {
-  const [firstModalOpen, setFirstModalOpen] = useState(false);
-  const [productsData, setProductsData] = useState([]);
+
+const ProductList = ({
+  favorites,
+  dataToList,
+  cart,
+  handleCartAddRemove,
+  handleFavoritesAddRemove,
+}) => {
+  const [modal, setModal] = useState(false);
   const [productAddToCart, setProductAddToCart] = useState(null);
-  console.log(productAddToCart);
-  const { cart, setCart, favorites, setFavorites } = useContext(dataContex);
 
   const handleAddToCardClick = (item) => {
     setProductAddToCart(item);
-    setFirstModalOpen(true);
+    setModal((prev) => !prev);
   };
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await fetchData();
-
-        setProductsData(res.products);
-      } catch (error) {}
-    };
-    getData();
-  }, []);
-
   const toggleFirstModal = () => {
-    setFirstModalOpen((prevState) => !prevState);
+    setModal((prev) => !prev);
   };
 
   const handleAddToCartConfirm = () => {
-    const isIn = cart.find((item) => item.id == productAddToCart.id);
-    if (isIn) {
-      setCart((prevState) => {
-        const newCart = prevState.filter(
-          (item) => item.id !== productAddToCart.id
-        );
+    handleCartAddRemove(productAddToCart);
 
-        localStorage.setItem("cart", JSON.stringify(newCart));
-        return newCart;
-      });
-
-      setFirstModalOpen(false);
-    } else {
-      setCart((prevState) => {
-        const newCart = [...prevState, productAddToCart];
-
-        localStorage.setItem("cart", JSON.stringify(newCart));
-        return newCart;
-      });
-
-      setFirstModalOpen(false);
-    }
+    setModal((prev) => !prev);
   };
   const handleAddToFavorites = (favorit) => {
-    const isIn = favorites.find((item) => item.id == favorit.id);
-    if (isIn) {
-      setFavorites((prevState) => {
-        const newFavorites = prevState.filter((item) => item.id !== favorit.id);
+    handleFavoritesAddRemove(favorit);
+  };
+  const ifInCart = () => {
+    const inCart = cart.find((item) => item.id === productAddToCart.id);
 
-        localStorage.setItem("favorites", JSON.stringify(newFavorites));
-        return newFavorites;
-      });
-    } else {
-      setFavorites((prevState) => {
-        const newFavorites = [...prevState, favorit];
-
-        localStorage.setItem("favorites", JSON.stringify(newFavorites));
-        return newFavorites;
-      });
-    }
+    return inCart ? true : false;
   };
 
   return (
     <div className="app container">
-      <h1>Prodicts list</h1>
-      <div className="products-container">
-        {productsData &&
-          productsData.map((item) => {
+      <div className="products-container  ">
+        {dataToList.length > 0 ? (
+          dataToList?.map((item) => {
             return (
               <Card
+                favorites={favorites}
+                cart={cart}
                 name={item.name}
                 image={item.imagePath}
-                cart={cart}
                 id={item.id}
                 key={item.id}
-                favorites={favorites}
                 handleAddToFavorites={() => handleAddToFavorites(item)}
                 handleAddToCardClick={() => handleAddToCardClick(item)}
               />
             );
-          })}
+          })
+        ) : (
+          <h1>Empty</h1>
+        )}
       </div>
 
-      {firstModalOpen && (
+      {modal && (
         <Modal
-          header="Add to cart"
+          header={ifInCart() ? "Remove from cart" : "Add to cart"}
           closeButton={true}
-          text="Plese confir that you want add to card this item."
+          text="Please confirm operation."
           actions={
             <Button
-              backgroundColor="orange"
-              text="Add"
+              backgroundColor={"orange"}
+              text={ifInCart() ? "Remove " : "Add"}
               onClick={handleAddToCartConfirm}
             />
           }

@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import "./Header.scss";
 import { Link } from "react-router-dom";
-import { dataContex } from "../../contex/DataContexProvider";
-function Header() {
-  const { cart, favorites } = useContext(dataContex);
 
+function Header({ cart, favorites }) {
   return (
     <div className="Header">
       <div className="container">
