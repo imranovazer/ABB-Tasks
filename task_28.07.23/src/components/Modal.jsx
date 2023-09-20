@@ -1,20 +1,31 @@
-import React from "react";
+import React, { Component } from "react";
 import "../styles/Modal.scss";
-class Modal extends React.Component {
+import Button from "./Button";
+
+class Modal extends Component {
   render() {
-    const { header, closeButton, text, actions } = this.props;
+    const { header, closeButton, text, actions, onClose } = this.props;
 
     return (
-      <div className="modalBackground" onClick={this.props.onClose}>
+      <div className="modalBackground" onClick={onClose}>
         <div className="Modal" onClick={(e) => e.stopPropagation()}>
           {closeButton && (
-            <button className="closeButton" onClick={this.props.onClose}>
+            <button className="closeButton" onClick={onClose}>
               x
             </button>
           )}
           {header && <h2>{header}</h2>}
           <p>{text}</p>
-          <div>{actions}</div>
+          <div className="action-container">
+            <div>{actions}</div>
+            <div>
+              <Button
+                text={"Cancel"}
+                backgroundColor={"red"}
+                onClick={onClose}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );
