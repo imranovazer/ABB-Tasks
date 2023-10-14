@@ -1,10 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import NewsRoutes from "./routes/NewsRoutes.ts";
-
+import UserRoutes from "./routes/UserRoutes.ts";
 import { Logger } from "./middlevire/logger.ts";
 import { myDataSource } from "./app-data-source.ts";
-
 
 myDataSource
   .initialize()
@@ -20,6 +19,7 @@ const PORT = process.env.PORT || 8080;
 
 app.use(Logger);
 app.use("/api/newsposts", NewsRoutes);
+app.use("/api/user", UserRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}...`);
